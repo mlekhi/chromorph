@@ -94,7 +94,7 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
         let distance = maxSize / (2 * Math.tan((Math.PI * camera.fov) / 360));
         if (distance < 1) distance = 1;
         // Adjust the multiplier for desired zoom (0.8 zooms in closer).
-        camera.position.set(0, 0, distance * 0.8);
+        camera.position.set(0, 0, distance);
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         console.log("Camera positioned at:", camera.position);
       },
