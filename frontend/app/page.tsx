@@ -1,36 +1,40 @@
 "use client";
 
-import React, { useState } from 'react';
-import UploadForm from '../components/UploadForm';
-import GLBViewer from '../components/GLBViewer';
+import React from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import HomeHero from "@/components/sections/homeHero";
+import LandingCards from "@/components/sections/landingCards";
+const features = [
+  {
+    title: "Instant 3D Chrome Effects",
+    description: "Transform your flat SVGs into ultra-realistic, high-gloss chrome designs in seconds.",
+    icon: "🎨",
+  },
+  {
+    title: "Zero Learning Curve",
+    description: "No 3D modeling experience? No problem. Get professional-grade effects instantly.",
+    icon: "🚀",
+  },
+  {
+    title: "Customize with Precision",
+    description: "Control lighting, reflections, and textures to create exactly the look you want.",
+    icon: "⚙️",
+  },
+  {
+    title: "Effortless Export",
+    description: "Download high-resolution images or vector files optimized for any project.",
+    icon: "📦",
+  },
+];
 
-const HomePage: React.FC = () => {
-  const [glbUrl, setGlbUrl] = useState<string | null>(null);
-
-  const handleUploadSuccess = (url: string) => {
-    setGlbUrl(url);
-  };
-
+const Landing: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-4">SVG to GLB Converter</h1>
-      {!glbUrl ? (
-        <UploadForm onUploadSuccess={handleUploadSuccess} />
-      ) : (
-        <div className="mt-8 w-full max-w-4xl">
-          <h2 className="text-2xl font-bold mb-4">Preview your GLB Model</h2>
-          <GLBViewer glbUrl={glbUrl} />
-          <a
-            href={glbUrl}
-            download="scene.glb"
-            className="mt-4 inline-block px-4 py-2 bg-green-500 text-white rounded"
-          >
-            Download GLB
-          </a>
-        </div>
-      )}
+    <div className="min-h-screen flex flex-col items-center text-center px-8 py-16">
+        <HomeHero />
+        <LandingCards />
     </div>
   );
 };
 
-export default HomePage;
+export default Landing;

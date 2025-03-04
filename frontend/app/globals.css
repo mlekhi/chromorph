@@ -1,23 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Syne:wght@600;700&display=swap');
+
+@import "tailwindcss";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .font-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-shadow: 
+      0px 1px 2px rgba(255, 255, 255, 0.1),
+      0px -1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .chrome-text {
+    background: linear-gradient(
+      to bottom,
+      rgb(255, 255, 255) 0%,
+      rgb(220, 220, 220) 50%,
+      rgb(170, 170, 170) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s linear infinite;
+  }
+  
+  .animate-shimmer-delayed {
+    animation: shimmer 3s linear infinite;
+    animation-delay: 1.5s;
+  }
+  
+  .animate-shine {
+    animation: shine 4s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 250% 250%;
+  }
+  100% {
+    background-position: -250% -250%;
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #000000;
+  --foreground: #ededed;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card-bg: rgba(0, 0, 0, 0.05);
+  --card-border: rgba(0, 0, 0, 0.1);
+  --text-primary: rgba(0, 0, 0, 0.9);
+  --text-secondary: rgba(0, 0, 0, 0.6);
+}
+
+/* Add smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Manrope', system-ui, sans-serif;
 }

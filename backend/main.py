@@ -2,6 +2,10 @@ import os
 import uuid
 import uvicorn
 import subprocess
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from pydantic import BaseModel
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from starlette.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +19,61 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Email configuration
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SMTP_USERNAME = os.getenv("EMAIL_USERNAME")
+SMTP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD") 
+RECIPIENT_EMAIL = "maya.lekhi1@gmail.com"  
+
+class ContactForm(BaseModel):
+    name: str
+    email: str
+    message: str
+
+def send_contact_email(form_data: ContactForm):
+    msg = MIMEMultipart()
+    msg['From'] = SMTP_USERNAME
+    msg['To'] = RECIPIENT_EMAIL
+    msg['Subject'] = f"New Contact Form Submission from {form_data.name}"
+
+    body = f"""
+    New contact form submission from Chromorph:
+
+    Name: {form_data.name}
+    Email: {form_data.email}
+
+    Message:
+    {form_data.message}
+    """
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        return False
+
+@app.post("/contact/")
+async def submit_contact_form(form_data: ContactForm):
+    if not SMTP_USERNAME or not SMTP_PASSWORD:
+        raise HTTPException(
+            status_code=500,
+            detail="Email configuration is missing. Please set EMAIL_USERNAME and EMAIL_APP_PASSWORD environment variables."
+        )
+
+    success = send_contact_email(form_data)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to send email")
+
+    return {"message": "Contact form submitted successfully"}
 
 UPLOAD_DIR = "uploads"
 OUTPUT_DIR = "renders"
@@ -45,8 +104,8 @@ async def upload_svg(file: UploadFile = File(...)):
             ],
             capture_output=True, text=True, check=True
         )
-        print(result.stdout)  # Print Blender’s standard output
-        print(result.stderr)  # Print Blender’s error output
+        print(result.stdout)  # Print Blender's standard output
+        print(result.stderr)  # Print Blender's error output
 
     except subprocess.CalledProcessError as e:
         print("Blender failed:", e.stderr)

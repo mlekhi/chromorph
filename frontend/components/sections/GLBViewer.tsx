@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+import { useTheme } from '../providers/ThemeProvider';
 
 interface GLBViewerProps {
   glbUrl: string;
@@ -11,6 +12,7 @@ interface GLBViewerProps {
 
 const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!glbUrl || !mountRef.current) {
@@ -28,8 +30,8 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
 
     // Create scene.
     const scene = new THREE.Scene();
-    // Set a fallback background color.
-    scene.background = new THREE.Color(0xe0e0e0);
+    // Set background color based on theme
+    scene.background = new THREE.Color(theme === 'dark' ? 0x000000 : 0xffffff);
 
     // Set up camera.
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
@@ -50,18 +52,17 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
     scene.add(directionalLight);
 
     // Load the HDR environment texture.
-// Load the HDR environment texture.
-  const rgbeLoader = new RGBELoader();
-  rgbeLoader.setDataType(THREE.FloatType); // Use FloatType instead of UnsignedByteType
-  rgbeLoader.load('world-texture.hdr', (texture) => {
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader();
-    const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-    // Apply the environment map to both the scene background and environment.
-    scene.environment = envMap;
-    texture.dispose();
-    pmremGenerator.dispose();
-    console.log("HDR environment applied to background and environment.");
+    const rgbeLoader = new RGBELoader();
+    rgbeLoader.setDataType(THREE.FloatType); // Use FloatType instead of UnsignedByteType
+    rgbeLoader.load('world-texture.hdr', (texture) => {
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      pmremGenerator.compileEquirectangularShader();
+      const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+      // Apply the environment map to both the scene background and environment.
+      scene.environment = envMap;
+      texture.dispose();
+      pmremGenerator.dispose();
+      console.log("HDR environment applied to background and environment.");
     });
 
     // Create a pivot group to hold the model.
@@ -135,14 +136,14 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [glbUrl]);
+  }, [glbUrl, theme]);
 
   // Force a nonzero height with inline style.
   return (
     <div
       ref={mountRef}
-      style={{ width: '100%', height: '400px' }}
-      className="bg-gray-200 border-2 border-dashed border-red-500"
+      style={{ width: '100%', height: '500px' }}
+      className="rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] shadow-xl overflow-hidden"
     />
   );
 };
